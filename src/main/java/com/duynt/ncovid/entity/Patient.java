@@ -19,6 +19,29 @@ public class Patient {
 
     private String country;
 
+    @Column(name = "up_time")
+    private String timeUpdate;
+
+    @Column(name = "up_date")
+    private String dayUpdate;
+
+    @Column(name = "update_flag")
+    private String firstUpdateFlag;
+
+    public Patient() {
+    }
+
+    public Patient(String patient, Integer age, String address, String status, String country, String timeUpdate, String dayUpdate, String firstUpdateFlag) {
+        this.patient = patient;
+        this.age = age;
+        this.address = address;
+        this.status = status;
+        this.country = country;
+        this.timeUpdate = timeUpdate;
+        this.dayUpdate = dayUpdate;
+        this.firstUpdateFlag = firstUpdateFlag;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -65,6 +88,30 @@ public class Patient {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getFirstUpdateFlag() {
+        return firstUpdateFlag;
+    }
+
+    public void setFirstUpdateFlag(String firstUpdateFlag) {
+        this.firstUpdateFlag = firstUpdateFlag;
+    }
+
+    public String getTimeUpdate() {
+        return timeUpdate;
+    }
+
+    public void setTimeUpdate(String timeUpdate) {
+        this.timeUpdate = timeUpdate;
+    }
+
+    public String getDayUpdate() {
+        return dayUpdate;
+    }
+
+    public void setDayUpdate(String dayUpdate) {
+        this.dayUpdate = dayUpdate;
     }
 
     @Override

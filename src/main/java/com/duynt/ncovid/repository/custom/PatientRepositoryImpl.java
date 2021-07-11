@@ -1,4 +1,4 @@
-package com.duynt.ncovid.repository.customrepository;
+package com.duynt.ncovid.repository.custom;
 
 import com.duynt.ncovid.entity.Patient;
 import com.duynt.ncovid.repository.PatientRepository;
@@ -23,5 +23,4 @@ public class PatientRepositoryImpl implements PatientRepositoryCustom {
             throw ex;
         }
     }
-
 }

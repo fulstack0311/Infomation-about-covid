@@ -1,6 +1,7 @@
 package com.duynt.ncovid.services.serviceImpl;
 
 import com.duynt.ncovid.common.Constant;
+import com.duynt.ncovid.common.Utils;
 import com.duynt.ncovid.entity.Patient;
 import com.duynt.ncovid.repository.PatientRepository;
 import com.duynt.ncovid.services.GetLastInfoAboutCovid;
@@ -10,12 +11,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
      * @throws IOException
      */
     @Override
+    @Scheduled(fixedDelay = 86400)
     public void getCaseInfoFrPageAndSaveDb() throws Exception {
         Document document = Jsoup.connect(Constant.URL_NCOV_MOH).sslSocketFactory(CreateSslSocketFactory.getSslSocketFactory()).get();
         List<String> listAllPages = getAllCaseInfoPages(document);
@@ -81,6 +83,10 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
     private List<Patient> getListPatientFromPage(Document doc, List<String> listAllPages) throws NumberFormatException, IOException {
         Document document = doc;
         List<Patient> listPatients = new ArrayList<Patient>();
+        String updateFlag = "1";
+        String nowDate = Utils.getNowDate();
+        String nowTime = Utils.getNowTime();
+        boolean isExist = false;
         for (int i = 0; i < listAllPages.size() + 1; i++) {
             Elements elements = document.select("#sailorTable > tbody > tr");
             if (elements == null || elements.size() == 0) {
@@ -88,17 +94,20 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
             }
             Patient patient = null;
             for (Element element : elements) {
-                patient = new Patient();
                 Elements patientInfo = element.select("td");
                 if (patientInfo.size() < 5) {
                     continue;
                 }
-                patient.setPatient(patientInfo.get(0).text());
-                patient.setAge(Integer.parseInt(patientInfo.get(1).text()));
-                patient.setAddress(patientInfo.get(2).text());
-                patient.setStatus(patientInfo.get(3).text());
-                patient.setCountry(patientInfo.get(4).text());
+                if (isPatientExistInDb(patientInfo)) {
+                    isExist = true;
+                    break;
+                }
+                patient = new Patient(patientInfo.get(0).text(), Integer.parseInt(patientInfo.get(1).text()), patientInfo.get(2).text(), patientInfo.get(3).text(), patientInfo.get(4).text(), nowTime, nowDate, updateFlag);
                 listPatients.add(patient);
+                updateFlag = "0";
+            }
+            if (isExist) {
+                break;
             }
             if (i == listAllPages.size()) {
                 continue;
@@ -106,5 +115,19 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
             document = Jsoup.connect(listAllPages.get(i)).sslSocketFactory(CreateSslSocketFactory.getSslSocketFactory()).get();
         }
         return listPatients;
+    }
+
+    /**
+     * Check patient existence taken from document in DB
+     *
+     * @param patientInfo Patient information from document
+     * @return true : exist patient in db
+     */
+    private boolean isPatientExistInDb(Elements patientInfo) {
+        String patientName = Utils.nullToBlank(patientRepository.findByUpdateFlag());
+        if (patientName.equals(patientInfo.get(0).text())) {
+            return true;
+        }
+        return false;
     }
 }

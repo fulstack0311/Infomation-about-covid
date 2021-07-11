@@ -2,6 +2,7 @@ package com.duynt.ncovid;
 
 import com.duynt.ncovid.entity.Patient;
 import com.duynt.ncovid.repository.PatientRepository;
+import com.duynt.ncovid.services.GetLastInfoAboutCovid;
 import com.duynt.ncovid.services.serviceImpl.GetLastInfoAboutCoividImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +23,6 @@ class NcovidApplicationTests {
         infoAboutCoivid.getCaseInfoFrPageAndSaveDb();
         System.out.println("success!");
     }
+
 
 }

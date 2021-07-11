@@ -1,4 +1,4 @@
-package com.duynt.ncovid.repository.customrepository;
+package com.duynt.ncovid.repository.custom;
 
 import com.duynt.ncovid.entity.Patient;
 
