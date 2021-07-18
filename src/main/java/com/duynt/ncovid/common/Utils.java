@@ -23,6 +23,18 @@ public class Utils {
         return dateFormat.format(dateTime);
     }
 
+    public static String formatDate(String date) throws ArrayIndexOutOfBoundsException {
+        if (date.contains("-")) {
+            return date;
+        }
+        String[] arrayDate = date.split("/");
+        return arrayDate[2] + "-" + arrayDate[1] + "-" + arrayDate[0];
+    }
+
+    public static String formatTime(String time) {
+        return time + ":00";
+    }
+
     public static String nullToBlank(String arg) {
         if (arg == null) {
             return "";

@@ -11,12 +11,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,7 +29,7 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
      * @throws IOException
      */
     @Override
-    @Scheduled(fixedDelay = 86400)
+//    @Scheduled(fixedDelay = 86400)
     public void getCaseInfoFrPageAndSaveDb() throws Exception {
         Document document = Jsoup.connect(Constant.URL_NCOV_MOH).sslSocketFactory(CreateSslSocketFactory.getSslSocketFactory()).get();
         List<String> listAllPages = getAllCaseInfoPages(document);
@@ -102,7 +100,8 @@ public class GetLastInfoAboutCoividImpl implements GetLastInfoAboutCovid {
                     isExist = true;
                     break;
                 }
-                patient = new Patient(patientInfo.get(0).text(), Integer.parseInt(patientInfo.get(1).text()), patientInfo.get(2).text(), patientInfo.get(3).text(), patientInfo.get(4).text(), nowTime, nowDate, updateFlag);
+                int age = !"".equals(patientInfo.get(1).text()) ? Integer.parseInt(patientInfo.get(1).text()) : 0;
+                patient = new Patient(patientInfo.get(0).text(), age, patientInfo.get(2).text(), patientInfo.get(3).text(), patientInfo.get(4).text(), nowTime, nowDate, updateFlag);
                 listPatients.add(patient);
                 updateFlag = "0";
             }
